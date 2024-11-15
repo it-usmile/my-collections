@@ -47,17 +47,23 @@
       href="templates/plugins/datatables-buttons/css/buttons.bootstrap4.min.css"
     />
     <!-- Theme style -->
-    <link rel="stylesheet" href="templates/dist/css/adminlte.min.css" />
-
-    <style>
-      i {
-        pointer-events: none;
-      }
-    </style>
+    <link rel="stylesheet" href="templates/dist/css/adminlte.css" />
+    <!--  -->
+    <link rel="stylesheet" href="assets/css/style.css" />
   </head>
 
-  <body class="hold-transition sidebar-mini" onload="swalLoading()">
-    <div class="wrapper d-none">
+  <body class="hold-transition sidebar-mini" onload="">
+    <div class="wrapper">
+      <!-- Preloader -->
+      <div
+        class="preloader flex-column justify-content-center align-items-center"
+      >
+        <img
+          class="animation__shake"
+          src="assets/img/USmile_Dee_Logo_Final.png"
+          alt="AdminLTELogo"
+        />
+      </div>
       <!-- Navbar -->
       <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <!-- Left navbar links -->
@@ -251,14 +257,18 @@
       <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="/index.html" class="brand-link">
+        <a href="#" class="brand-link logo-switch">
           <img
-            src="/assets/favicon/android-chrome-192x192.png"
-            alt="USmile Logo"
-            class="brand-image img-circle elevation-3"
-            style="opacity: 0.8"
+            src="assets/img/USmile_Dee_Logo_Final_sm.png"
+            alt="AdminLTE Docs Logo Small"
+            class="brand-image-xl logo-xs"
           />
-          <span class="brand-text font-weight-light">MyCollections</span>
+          <img
+            src="assets/img/USmile_Dee_Logo_Final.png"
+            alt="AdminLTE Docs Logo Large"
+            class="brand-image-xs logo-xl"
+            style="left: 12px"
+          />
         </a>
 
         <!-- Sidebar -->
@@ -447,87 +457,6 @@
     <!--  -->
     <script src="assets/js/master.js"></script>
     <!--  -->
-    <script>
-      var resource = new Object();
-      var action = urlParams().get("action");
-      var allowLists = ["lists", "types", "collections"];
-      if (allowLists.includes(action)) {
-        resource.target = action;
-        resource.id = urlParams().get("id") ? urlParams().get("id") : null;
-        getResources(resource.target, resource.id).then(function (row) {
-          // console.log(row);
-          var output = "";
-          row.forEach(function (val) {
-            // console.log(val);
-            if (val) {
-              output += `<tr>`;
-              output += `<td>${val.title}</td>`;
-              output += `<td>${val.id}</td>`;
-              output += `<td>${val.members.length}</td>`;
-              output += `<td>`;
-              output += `<a href="#" class="text-muted search-link mr-3" title="Detail" data-id="${val.id}"><i class="fas fa-search"></i></a>`;
-              output += `<a href="#" class="text-muted trash-link" title="Trash" data-id="${val.id}"><i class="fas fa-trash"></i></a>`;
-              output += `</td>`;
-              output += `</tr>`;
-            }
-            // out
-          });
-          $("#exampleBody").html(output);
-          //
-
-          $(function () {
-            $("#example")
-              .DataTable({
-                responsive: true,
-                lengthChange: false,
-                autoWidth: false,
-                buttons: [
-                  "copy",
-                  "csv",
-                  "excel",
-                  "pdf",
-                  {
-                    extend: "print",
-                    exportOptions: {
-                      columns: [0, 1, 2],
-                    },
-                  },
-                  "colvis",
-                ],
-                columnDefs: [{ orderable: false, targets: [1, 2, 3] }],
-              })
-              .buttons()
-              .container()
-              .appendTo("#example_wrapper .col-md-6:eq(0)");
-          });
-
-          Swal.close();
-          $(".wrapper").removeClass("d-none");
-        });
-      } else {
-        setTimeout(function () {
-          swalError();
-        }, 1000);
-      }
-
-      $("table").on("click", "a", function (e) {
-        e.preventDefault();
-        if (e.target && e.target.matches(".search-link")) {
-          var id = e.target.dataset.id;
-          console.log(id);
-        }
-        if (e.target && e.target.matches(".trash-link")) {
-          var id = e.target.dataset.id;
-          console.log(id);
-        }
-      });
-
-      async function getResources(action, id = null) {
-        scriptUrl = scriptUrl + `?resource=${action}&id=${id}`;
-        var result = await fetch(scriptUrl);
-        var data = await result.json();
-        return data;
-      }
-    </script>
+    <script src="assets/js/resources.js"></script>
   </body>
 </html>
