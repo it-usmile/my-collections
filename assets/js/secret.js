@@ -20,7 +20,7 @@ $("form#authen").submit(async function (e) {
   if (result.message) {
     alert(result.message);
   } else {
-    setCookie(cname, result.id, 0.25, "secret.html");
+    setCookie(cname, result.id, 0.25);
     window.location.reload();
   }
 });
