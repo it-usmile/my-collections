@@ -4,7 +4,7 @@ pageLoaded();
 
 if (destroy) {
   document.cookie =
-    cname + "=; path=/secret.html; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    cname + "=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
   window.location.href = "index.html";
 }
 
