@@ -12,7 +12,6 @@ var destroy = urlParams().get("destroy");
 
 // function
 
-
 function hidePreloader() {
   setTimeout(function () {
     preloader.css("height", 0);
@@ -27,6 +26,14 @@ function swalLoading() {
     didOpen: function () {
       Swal.showLoading();
     },
+  });
+}
+
+function swalMessage(title, message, status = "success") {
+  Swal.fire({
+    title: title,
+    html: message,
+    icon: status,
   });
 }
 
@@ -95,4 +102,3 @@ function switchTheme(e) {
     localStorage.setItem("theme", "light");
   }
 }
-

@@ -2,11 +2,11 @@ var cname = "my_" + urlParams().get("action");
 
 pageLoaded();
 
-if (destroy) {
-  document.cookie =
-    cname + "=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-  window.location.href = "index.html";
-}
+// if (destroy) {
+//   document.cookie =
+//     cname + "=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+//   window.location.href = "index.html";
+// }
 
 $("form#authen").submit(async function (e) {
   e.preventDefault();
@@ -15,23 +15,25 @@ $("form#authen").submit(async function (e) {
   var link = `${scriptUrl}?hash=${urlParams().get(
     "action"
   )}&id=${urlParams().get("id")}&secret=${secret}`;
+  swalLoading();
   var data = await fetch(link);
   var result = await data.json();
   if (result.message) {
-    alert(result.message);
+    // alert(result.message);
+    swalMessage("Something went wrong", "Please try again", "error");
   } else {
-    setCookie(cname, result.id, 0.25);
+    // setCookie(cname, result.id, 0.25);
+    sessionStorage.setItem(cname, result.id);
     window.location.reload();
   }
 });
 
 async function pageLoaded() {
-  var myCookie = await cookieStore.get(cname);
-  console.log(myCookie);
+  var ssid = sessionStorage.getItem(cname);
+  console.log(ssid);
   if (
     urlParams().get("id") &&
-    myCookie &&
-    myCookie.value == urlParams().get("id") &&
+    ssid == urlParams().get("id") &&
     urlParams().get("action")
   ) {
     $(".main-header").removeClass("d-none");
