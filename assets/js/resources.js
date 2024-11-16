@@ -27,6 +27,7 @@ if (allowLists.includes(action)) {
         .DataTable({
           responsive: true,
           lengthChange: false,
+          stateSave: true,
           autoWidth: false,
           buttons: [
             "copy",
@@ -74,6 +75,6 @@ async function getResources(action, id = null) {
   scriptUrl = id ? scriptUrl + `&id=${id}` : scriptUrl;
   var result = await fetch(scriptUrl);
   var data = await result.json();
-//   console.log(scriptUrl);
+  //   console.log(scriptUrl);
   return data;
 }
