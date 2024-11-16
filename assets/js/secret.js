@@ -1,4 +1,5 @@
-var cname = "my_" + urlParams().get("action");
+var cname = "sc_" + urlParams().get("action");
+var ssid = sessionStorage.getItem(cname);
 
 pageLoaded();
 
@@ -29,33 +30,50 @@ $("form#authen").submit(async function (e) {
 });
 
 async function pageLoaded() {
-  var ssid = sessionStorage.getItem(cname);
-  console.log(ssid);
-  if (
-    urlParams().get("id") &&
-    ssid == urlParams().get("id") &&
-    urlParams().get("action")
-  ) {
-    $(".main-header").removeClass("d-none");
-    $(".main-sidebar").removeClass("d-none");
-    $(".content-wrapper").removeClass("d-none");
-    $(".main-footer").removeClass("d-none");
-  } else {
-    if (urlParams().get("id")) {
-      var data = await fetch(
-        `${scriptUrl}?resource=${urlParams().get(
-          "action"
-        )}&id=${urlParams().get("id")}`
-      );
-      var result = await data.json();
-      if (result.length <= 0) {
-        $(".main-error").removeClass("d-none");
-      } else {
-        $(".main-authen").removeClass("d-none");
+  var result;
+  if (urlParams().get("id") && urlParams().get("action")) {
+    var data = await fetch(
+      `${scriptUrl}?resource=${urlParams().get("action")}&id=${urlParams().get(
+        "id"
+      )}`
+    );
+    result = await data.json();
+  }
+  if (result) {
+    if (ssid == urlParams().get("id")) {
+      var data = new Array();
+
+      switch (urlParams().get("action")) {
+        case "lists":
+          result.members.forEach(function (row) {
+            if (!row.secret) {
+              data.push(row);
+            }
+          });
+          break;
+        case "collections":
+          data = result;
+          break;
       }
+      // if (urlParams().get("action") == "lists") {
+      //   result.members.forEach(function (row) {
+      //     if (!row.secret) {
+      //       collections.push(row);
+      //     }
+      //   });
+      // }
+
+      console.log(result);
+      $(".main-header").removeClass("d-none");
+      $(".main-sidebar").removeClass("d-none");
+      $(".content-wrapper").removeClass("d-none");
+      $(".main-footer").removeClass("d-none");
+      // console.log(result.members);
     } else {
-      $(".main-error").removeClass("d-none");
+      $(".main-authen").removeClass("d-none");
     }
+  } else {
+    $(".main-error").removeClass("d-none");
   }
   hidePreloader();
 }
