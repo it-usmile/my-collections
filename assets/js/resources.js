@@ -1,4 +1,4 @@
-// var ssuid = localStorage.getItem("ssuid");
+var ssuid = localStorage.getItem("ssuid");
 // if (ssuid) {
 var resource = new Object();
 var action = urlParams().get("action");
