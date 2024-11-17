@@ -64,8 +64,43 @@
           alt="AdminLTELogo"
         />
       </div>
+      <div
+        class="main-error dark-mode flex-column justify-content-center align-items-center d-none"
+      >
+        <!-- <h1>My Collections</h1> -->
+        <div class="m-auto">
+          <h1>Not found!</h1>
+        </div>
+      </div>
+      <div
+        class="main-authen dark-mode flex-column justify-content-center align-items-center d-none"
+      >
+        <!-- <h1>My Collections</h1> -->
+        <div class="col-lg-4 m-auto">
+          <div class="card card-body">
+            <form action="" class="form" id="authen">
+              <label for="hash">Enter your password</label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Password"
+                  aria-label="Password"
+                  aria-describedby="basic-addon"
+                  required
+                />
+                <div class="input-group-append">
+                  <input class="btn btn-primary" type="submit" />
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
       <!-- Navbar -->
-      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <nav
+        class="main-header d-none navbar navbar-expand navbar-white navbar-light"
+      >
         <!-- Left navbar links -->
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -255,7 +290,7 @@
       <!-- /.navbar -->
 
       <!-- Main Sidebar Container -->
-      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <aside class="main-sidebar d-none sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href="#" class="brand-link logo-switch">
           <img
@@ -301,10 +336,19 @@
                   <li class="nav-item">
                     <a
                       href="resources.html?action=lists"
-                      class="nav-link active"
+                      class="nav-link nav-link-resources"
                     >
                       <i class="far fa-circle nav-icon"></i>
                       <p>Resources</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="resources.html?action=types"
+                      class="nav-link nav-link-types"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Resource Types</p>
                     </a>
                   </li>
                 </ul>
@@ -337,18 +381,20 @@
       </aside>
 
       <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
+      <div class="content-wrapper d-none">
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <div class="container-fluid">
             <div class="row mb-2">
               <div class="col-sm-6">
-                <h1>Resources</h1>
+                <h1 id="titleHead">Resources</h1>
               </div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active">Resources</li>
+                  <!-- <li class="breadcrumb-item active">
+                    
+                  </li> -->
                 </ol>
               </div>
             </div>
@@ -361,13 +407,16 @@
           <div class="container-fluid">
             <div class="row">
               <div class="col-12">
-                <div class="card">
+                <div class="card d-none" id="resourceDataTables">
                   <div class="card-header">
-                    <h3 class="card-title">
-                      DataTable
-                    </h3>
+                    <h3 class="card-title">DataTable</h3>
                     <div class="card-tools">
-                      <a href="#" class="btn btn-sm btn-tool text-success" title="Add">
+                      <a
+                        href="#"
+                        class="btn btn-sm btn-tool text-success"
+                        title="Add New Resource"
+                        id="newResource"
+                      >
                         <i class="fas fa-plus"></i>
                       </a>
                       <a href="#" class="btn btn-sm btn-tool" title="Options">
@@ -405,6 +454,114 @@
                   <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
+                <div class="card d-none" id="resourceTypes">
+                  <div class="card-header">
+                    <h3 class="card-title">DataTable</h3>
+                    <div class="card-tools">
+                      <a
+                        href="#"
+                        class="btn btn-sm btn-tool text-success"
+                        title="Add New Resource Type"
+                        id="newResourceType"
+                      >
+                        <i class="fas fa-plus"></i>
+                      </a>
+                      <a href="#" class="btn btn-sm btn-tool" title="Options">
+                        <i class="fas fa-bars"></i>
+                      </a>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table
+                      id="example3"
+                      class="table table-bordered table-hover"
+                    >
+                      <thead>
+                        <tr>
+                          <th>NAME</th>
+                          <th>RTID</th>
+                          <th>NOTE</th>
+                          <th>ADDONS</th>
+                        </tr>
+                      </thead>
+                      <tbody id="example3Body">
+                        <!--  -->
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <th>NAME</th>
+                          <th>RTID</th>
+                          <th>NOTE</th>
+                          <th>ADDONS</th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+
+                <div class="card d-none" id="myCollections">
+                  <div class="card-header">
+                    <h3 class="card-title">Collections</h3>
+                    <div class="card-tools">
+                      <a
+                        href="#"
+                        class="btn btn-sm btn-tool text-success"
+                        title="Add New Collection"
+                        id="newCollection"
+                      >
+                        <i class="fas fa-plus"></i>
+                      </a>
+                      <a
+                        href="#"
+                        class="btn btn-sm btn-tool text-info"
+                        title="Reload"
+                        id="reload"
+                      >
+                        <i class="fas fa-sync"></i>
+                      </a>
+                      <a href="#" class="btn btn-sm btn-tool" title="Options">
+                        <i class="fas fa-bars"></i>
+                      </a>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <!--  -->
+                    <table
+                      id="example2"
+                      class="table table-bordered table-hover"
+                    >
+                      <thead>
+                        <tr>
+                          <th>TYPE</th>
+                          <th>LABEL</th>
+                          <th>SECRTE</th>
+                          <th>SSID</th>
+                          <th>DESCRIPTIONS</th>
+                          <th>ADDONS</th>
+                        </tr>
+                      </thead>
+                      <tbody id="exampleBody2">
+                        <!--  -->
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <th>TYPE</th>
+                          <th>LABEL</th>
+                          <th>SECRTE</th>
+                          <th>SSID</th>
+                          <th>DESCRIPTIONS</th>
+                          <th>ADDONS</th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
               </div>
               <!-- /.col -->
             </div>
@@ -415,7 +572,7 @@
         <!-- /.content -->
       </div>
       <!-- /.content-wrapper -->
-      <footer class="main-footer">
+      <footer class="main-footer d-none">
         <div class="float-right d-none d-sm-block"><b>Version</b> 3.2.0</div>
         <strong
           >Copyright &copy; 2014-2021
@@ -424,6 +581,205 @@
         All rights reserved.
       </footer>
       <!-- /.control-sidebar -->
+
+      <!-- Modals -->
+      <div
+        class="modal fade"
+        id="modal-default"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div class="modal-dialog">
+          <form class="modal-content" id="newResource">
+            <div class="modal-header">
+              <h4 class="modal-title">New Resource</h4>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- <p>One fine body…</p> -->
+              <div class="mb-4">
+                <label for="title" class="form-label">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-4">
+                <label for="secert" class="form-label">Secret</label>
+                <input
+                  type="password"
+                  name="secret"
+                  id="secert"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </form>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+      <div
+        class="modal fade"
+        id="modal-default3"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div class="modal-dialog">
+          <form class="modal-content" id="newResourceType">
+            <div class="modal-header">
+              <h4 class="modal-title">New Resource Type</h4>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- <p>One fine body…</p> -->
+              <div class="mb-4">
+                <label for="name" class="form-label">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-4">
+                <label for="note" class="form-label">Note</label>
+                <textarea name="note" id="note" class="form-control"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </form>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+
+      <div
+        class="modal fade"
+        id="modal-default2"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div class="modal-dialog">
+          <form class="modal-content" id="newCollection">
+            <div class="modal-header">
+              <h4 class="modal-title">New Collection</h4>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- <p>One fine body…</p> -->
+              <div class="mb-4">
+                <label for="label" class="form-label">Label</label>
+                <input
+                  type="text"
+                  name="label"
+                  id="label"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-4 row g-3">
+                <div class="col-lg">
+                  <label for="type" class="form-label">Type</label>
+                  <select
+                    name="type"
+                    id="type"
+                    name="type"
+                    class="custom-select"
+                    required
+                  >
+                    <!--  -->
+                    <option value="" selected>Options...</option>
+                  </select>
+                </div>
+                <div class="col-lg">
+                  <label for="secret2" class="form-label">Secret</label>
+                  <input
+                    type="password"
+                    name="secret"
+                    id="secret2"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="mb-4">
+                <label for="descriptions" class="form-label"
+                  >Descriptions</label
+                >
+                <textarea
+                  name="descriptions"
+                  id="descriptions"
+                  class="form-control"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button
+                type="button"
+                class="btn btn-default"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </form>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
     </div>
     <!-- ./wrapper -->
 

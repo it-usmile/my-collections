@@ -11,6 +11,9 @@ var mainHeader = document.querySelector(".main-header");
 var destroy = urlParams().get("destroy");
 
 // function
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
 
 function hidePreloader() {
   setTimeout(function () {
@@ -23,14 +26,39 @@ function swalLoading() {
   Swal.fire({
     title: "Loading.",
     html: "Wait a moment please",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
     didOpen: function () {
       Swal.showLoading();
     },
   });
 }
 
-function swalMessage(title, message, status = "success") {
+function swalProcessing() {
+  let timerInterval;
   Swal.fire({
+    title: "Processing<b></b>",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+      const timer = Swal.getPopup().querySelector("b");
+      var i = 0;
+      timerInterval = setInterval(() => {
+        if (i < 3) {
+          timer.textContent += `.`;
+          i++;
+        } else {
+          timer.textContent = "";
+          i = 0;
+        }
+      }, 1500);
+    },
+  });
+}
+
+function swalMessage(title, message, status = "success") {
+  return Swal.fire({
     title: title,
     html: message,
     icon: status,
@@ -68,37 +96,31 @@ function setCookie(cname, cvalue, exdays = 1) {
   document.cookie = cname + "=" + cvalue + `; path=/; ` + expires;
 }
 
-if (currentTheme) {
-  if (currentTheme === "dark") {
-    if (!document.body.classList.contains("dark-mode")) {
-      document.body.classList.add("dark-mode");
-    }
-    if (mainHeader.classList.contains("navbar-light")) {
-      mainHeader.classList.add("navbar-dark");
-      mainHeader.classList.remove("navbar-light");
-    }
-    toggleSwitch.checked = true;
-  }
+async function getRecords(collection) {
+  var targetScriptUrl = scriptUrl + `?resource=records`;
+  targetScriptUrl += `&collection=${collection}`;
+  var result = await fetch(targetScriptUrl);
+  var data = await result.json();
+  //   console.log(scriptUrl);
+  return data;
 }
 
-function switchTheme(e) {
-  if (e.target.checked) {
-    if (!document.body.classList.contains("dark-mode")) {
-      document.body.classList.add("dark-mode");
-    }
-    if (mainHeader.classList.contains("navbar-light")) {
-      mainHeader.classList.add("navbar-dark");
-      mainHeader.classList.remove("navbar-light");
-    }
-    localStorage.setItem("theme", "dark");
-  } else {
-    if (document.body.classList.contains("dark-mode")) {
-      document.body.classList.remove("dark-mode");
-    }
-    if (mainHeader.classList.contains("navbar-dark")) {
-      mainHeader.classList.add("navbar-light");
-      mainHeader.classList.remove("navbar-dark");
-    }
-    localStorage.setItem("theme", "light");
-  }
+async function getResources(action, id = null) {
+  var targetScriptUrl = scriptUrl + `?resource=${action}`;
+  targetScriptUrl = id ? targetScriptUrl + `&id=${id}` : targetScriptUrl;
+  var result = await fetch(targetScriptUrl);
+  var data = await result.json();
+  //   console.log(scriptUrl);
+  return data;
+}
+
+async function postResources(action, data = null) {
+  var targetScriptUrl = scriptUrl + `?resource=${action}`;
+  targetScriptUrl = data ? targetScriptUrl + `&${data}` : targetScriptUrl;
+  var result = await fetch(targetScriptUrl, {
+    method: "POST",
+  });
+  var response = await result.json();
+  //   console.log(scriptUrl);
+  return response;
 }
