@@ -336,7 +336,7 @@
                   <li class="nav-item">
                     <a
                       href="resources.html?action=lists"
-                      class="nav-link nav-link-resources"
+                      class="nav-link nav-link-lists"
                     >
                       <i class="far fa-circle nav-icon"></i>
                       <p>Resources</p>
@@ -391,7 +391,9 @@
               </div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item">
+                    <a href="javascript:void(0)">Home</a>
+                  </li>
                   <!-- <li class="breadcrumb-item active">
                     
                   </li> -->
@@ -406,7 +408,7 @@
         <section class="content">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-12">
+              <div class="col-12" id="resourceContents">
                 <div class="card d-none" id="resourceDataTables">
                   <div class="card-header">
                     <h3 class="card-title">DataTable</h3>
@@ -414,12 +416,25 @@
                       <a
                         href="#"
                         class="btn btn-sm btn-tool text-success"
-                        title="Add New Resource"
-                        id="newResource"
+                        title=""
+                        id="newRecord"
+                        data-source=""
                       >
                         <i class="fas fa-plus"></i>
                       </a>
-                      <a href="#" class="btn btn-sm btn-tool" title="Options">
+                      <a
+                        href="#"
+                        class="btn btn-sm btn-tool text-info"
+                        title="Reload"
+                        id="reload"
+                      >
+                        <i class="fas fa-sync"></i>
+                      </a>
+                      <a
+                        href="javascript:void(0)"
+                        class="btn btn-sm btn-tool"
+                        title="Options"
+                      >
                         <i class="fas fa-bars"></i>
                       </a>
                     </div>
@@ -434,8 +449,8 @@
                         <tr>
                           <th>TITLE</th>
                           <th>SSID</th>
-                          <th>COLLECTIONS</th>
                           <th>ADDONS</th>
+                          <th>OPTIONS</th>
                         </tr>
                       </thead>
                       <tbody id="exampleBody">
@@ -445,116 +460,8 @@
                         <tr>
                           <th>TITLE</th>
                           <th>SSID</th>
-                          <th>COLLECTIONS</th>
                           <th>ADDONS</th>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                  <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-                <div class="card d-none" id="resourceTypes">
-                  <div class="card-header">
-                    <h3 class="card-title">DataTable</h3>
-                    <div class="card-tools">
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-tool text-success"
-                        title="Add New Resource Type"
-                        id="newResourceType"
-                      >
-                        <i class="fas fa-plus"></i>
-                      </a>
-                      <a href="#" class="btn btn-sm btn-tool" title="Options">
-                        <i class="fas fa-bars"></i>
-                      </a>
-                    </div>
-                  </div>
-                  <!-- /.card-header -->
-                  <div class="card-body">
-                    <table
-                      id="example3"
-                      class="table table-bordered table-hover"
-                    >
-                      <thead>
-                        <tr>
-                          <th>NAME</th>
-                          <th>RTID</th>
-                          <th>NOTE</th>
-                          <th>ADDONS</th>
-                        </tr>
-                      </thead>
-                      <tbody id="example3Body">
-                        <!--  -->
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <th>NAME</th>
-                          <th>RTID</th>
-                          <th>NOTE</th>
-                          <th>ADDONS</th>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                  <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-
-                <div class="card d-none" id="myCollections">
-                  <div class="card-header">
-                    <h3 class="card-title">Collections</h3>
-                    <div class="card-tools">
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-tool text-success"
-                        title="Add New Collection"
-                        id="newCollection"
-                      >
-                        <i class="fas fa-plus"></i>
-                      </a>
-                      <a
-                        href="#"
-                        class="btn btn-sm btn-tool text-info"
-                        title="Reload"
-                        id="reload"
-                      >
-                        <i class="fas fa-sync"></i>
-                      </a>
-                      <a href="#" class="btn btn-sm btn-tool" title="Options">
-                        <i class="fas fa-bars"></i>
-                      </a>
-                    </div>
-                  </div>
-                  <!-- /.card-header -->
-                  <div class="card-body">
-                    <!--  -->
-                    <table
-                      id="example2"
-                      class="table table-bordered table-hover"
-                    >
-                      <thead>
-                        <tr>
-                          <th>TYPE</th>
-                          <th>LABEL</th>
-                          <th>SECRTE</th>
-                          <th>SSID</th>
-                          <th>DESCRIPTIONS</th>
-                          <th>ADDONS</th>
-                        </tr>
-                      </thead>
-                      <tbody id="exampleBody2">
-                        <!--  -->
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <th>TYPE</th>
-                          <th>LABEL</th>
-                          <th>SECRTE</th>
-                          <th>SSID</th>
-                          <th>DESCRIPTIONS</th>
-                          <th>ADDONS</th>
+                          <th>OPTIONS</th>
                         </tr>
                       </tfoot>
                     </table>
@@ -585,7 +492,7 @@
       <!-- Modals -->
       <div
         class="modal fade"
-        id="modal-default"
+        id="modal-create-lists"
         aria-modal="true"
         role="dialog"
       >
@@ -621,6 +528,7 @@
                   name="secret"
                   id="secert"
                   class="form-control"
+                  minlength="4"
                   required
                 />
               </div>
@@ -645,7 +553,7 @@
 
       <div
         class="modal fade"
-        id="modal-default3"
+        id="modal-create-types"
         aria-modal="true"
         role="dialog"
       >
@@ -699,7 +607,7 @@
 
       <div
         class="modal fade"
-        id="modal-default2"
+        id="modal-create-collections"
         aria-modal="true"
         role="dialog"
       >
@@ -749,6 +657,7 @@
                     name="secret"
                     id="secret2"
                     class="form-control"
+                    minlength="4"
                   />
                 </div>
               </div>

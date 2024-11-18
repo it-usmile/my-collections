@@ -96,6 +96,15 @@ function setCookie(cname, cvalue, exdays = 1) {
   document.cookie = cname + "=" + cvalue + `; path=/; ` + expires;
 }
 
+async function getGroups(type, collection) {
+  var targetScriptUrl = scriptUrl + `?resource=groups`;
+  targetScriptUrl += `&type=${type}&src=${collection}`;
+  var result = await fetch(targetScriptUrl);
+  var data = await result.json();
+  //   console.log(scriptUrl);
+  return data;
+}
+
 async function getRecords(collection) {
   var targetScriptUrl = scriptUrl + `?resource=records`;
   targetScriptUrl += `&collection=${collection}`;
