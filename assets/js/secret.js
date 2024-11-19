@@ -51,7 +51,7 @@ $("form#authen").submit(async function (e) {
   swalLoading();
   var data = await fetch(link);
   var result = await data.json();
-  // console.log(result);
+  // // console.log(result);
   if (result.message) {
     // alert(result.message);
     swalMessage("Something went wrong", "Please try again", "error");
@@ -65,182 +65,271 @@ $("form#authen").submit(async function (e) {
 async function pageLoaded() {
   var id = urlParams().get("id");
   var action = urlParams().get("action");
-  var actionArray = ["lists", "collections"];
-  // var dataObj = new Object();
+  var dataType = ["collections", "lists"];
 
-  var result = await getResources(action, id).then(async function (row) {
-    var response = { target: row, addons: new Array() }
-
-    await getResources(actionArray[0], row.resource).then(function (resource) {
-      if (resource.members) {
-        resource.members.forEach(function (member) {
-          // console.log(member);
-          if (!member.secret && member.id != row.id) {
+  var title;
+  await getResources(action, id)
+    .then(async function (row) {
+      var response = new Object();
+      var name = row.label ? row.label : row.title;
+      var type = row.type ? row.type : null;
+      title = name;
+      response.target = { id: row.id, name, type };
+      response.type = row.label ? dataType[0] : dataType[1];
+      response.members = new Array();
+      if (row.members) {
+        row.members.forEach(function (val) {
+          if (!val.secret) {
+            response.members.push(val);
+          }
+        });
+      }
+      $("h1#titleHead").html(title);
+      if (row.resource) {
+        title = row.type.name;
+        await getResources("lists", row.resource).then(function (lists) {
+          lists.members.forEach(function (val) {
+            if (val.id != id && !val.secret) {
+              response.members.push(val);
+            }
+          });
+        });
+      }
+      return response;
+    })
+    .then(async function (data) {
+      // // console.log(data);
+      // title =
+      switch (data.type) {
+        case dataType[0]:
+          // console.log(data);
+          await getRecords(data.target.id).then(function (row) {
+            // row.collection = await data.target.name;
+            var length = row.length;
+            var col = 4;
+            if (length <= 1) {
+              col = 12;
+            }
+            row.collection = data.target;
+            $("#resources").append(
+              cardComponent(data.target.type.name, row, col)
+            );
+          });
+        // break;
+        case dataType[1]:
+          var typeArr = new Array();
+          data.members.forEach(async function (row) {
+            // console.log(row);
+            var dataObj = {
+              id: row.id,
+              name: row.label,
+            };
             var already;
-            for (var i = 0; i < response.addons.length; i++) {
-              // console.log(response.addons[i]);
-              // for (var n = 0; n < response[i].addons.length; n++) {
-              if (response.addons[i].type.id == member.type.id) {
+            for (var i = 0; i < typeArr.length; i++) {
+              var val = typeArr[i];
+              if (val.type.id == row.type.id) {
+                val.row.push(dataObj);
+                // // console.log(val);
                 already = true;
-                response.addons[i].members.push(member);
               }
-              // 
-              // }
-              // alre
             }
-            if (response.addons.length == 0 || !already) {
-              response.addons.push({ type: member.type, members: [member] })
-              // response.addons.members.push(member)
+
+            if (typeArr.length == 0 || !already) {
+              typeArr.push({ type: row.type, row: [dataObj] });
             }
-            // response.addons.forEach(function (item) {
-            //   if (item.type.id == member.type.id) {
-            //     var data = { type: member.type.name, members: new Array() };
-            //     response.addons
-            //   }
-            // })
-            // console.log(member.type)
+          });
+          for (var i = 0; i < typeArr.length; i++) {
+            var dataArr = new Array();
+            var length = typeArr[i].row.length;
+            // console.log(typeArr[i]);
+            // var col = 4;
+            // if (length <= 1) {
+            //   col = 12;
+            // }
+            // // console.log(typeArr[i]);
+            for (var n = 0; n < typeArr[i].row.length; n++) {
+              // // console.log(typeArr[i].row[n]);
+              // console.log(typeArr[i].row[n]);
+              // console.log(typeArr[i].row);
+              await getRecords(typeArr[i].row[n].id).then(function (val) {
+                // typeArr[i].row[n].collection
+                // val.collection = typeArr[i].row;
+                val.forEach(function (item) {
+                  // // console.log(item);
+                  item.collection = typeArr[i].row[n];
+                  dataArr.push(item);
+                });
+                // result = val;
+              });
+            }
+            // // console.log(dataArr);
+            var col = 4;
+            if (length <= 1) {
+              col = 12;
+            } else if (length <= 3 && length >= 2) {
+              col = 6;
+            }
+            // // console.log(length);
+            $("#resources").append(
+              cardComponent(typeArr[i].type.name, dataArr, col)
+            );
           }
-        })
-        if (id && action == actionArray[0]) {
-          response.addons.push(member);
-        }
+
+          // typeArr.forEach(async function (row) {
+          //   row.record.push(await getRecords(row.id));
+          //   // console.log(row);
+          // });
+          // // console.log(typeArr);
+          break;
       }
-      // console.log(resource.members);
-    });
-    // console.log(row)
-    return response;
-  });
 
-  if (result) {
-    var access;
-    var target = result.target;
-    var addons = result.addons;
-
-    if (target.secret || target.encoded) {
-      //   // if (action == "collections" || action == "lists") {
-      //   //   addons = true;
-      //   // }
-      if (ssid == urlParams().get("id")) {
-        access = true;
-      }
-    } else {
-      access = true;
-    }
-
-    console.log(result);
-    if (access) {
-      // if (id && action == actionArray[0]) {
-      // target.members.forEach(function (row) {
-      //   console.log(row)
-      // })
-      // addons.push({ type: target.type, members: target.members });
-      await getRecords(target.id).then(function (row) {
-        console.log(row);
-        // target.type.name = target.type ? target.type.name : ;
-        // if (!result.target.title) {
-        //   $("#resources").append(cardComponent(target.type.name, row))
-        // } else {
-        //   result.target.members.forEach(async function (row) {
-        //     // console.log(row)
-        //     await getRecords(row.id).then(function (row) {
-        //       console.log(row);
-        //       // target.type.name = target.type ? target.type.name : ;
-        //       if (!result.target.title) {
-        //         $("#resources").append(cardComponent(target.type.name, row))
-        //       } else {
-        //         result.target.members.forEach(function (row) {
-        //           console.log(row)
-        //         })
-        //       }
-        //     })
-        //   })
-        // }
-      })
+      // if (action == dataType[0]) {
+      //   title = "";
       // }
-
-      if (addons.length > 0) {
-        addons.forEach(async function (item) {
-          // console.log(item)
-          var title = item.type.name;
-          var col = 4;
-          var records = new Array();
-          for (var i = 0; i < item.members.length; i++) {
-            await getRecords(item.members[i].id).then(function (result) {
-              result.forEach(function (foo) {
-                records.push(foo);
-
-              })
-            })
-            // records.push(getRecords(item.members[i].id))
-          }
-          // console.log(item);
-          // var records = await getRecords(item.id);
-          // var records = new Array();
-          // item.members.forEach(async function (data) {
-          //   // records.push(await getRecords(data.id).then(function (row) {
-          //   //   for (var i = 0; i < row.length; i++) {
-          //   //     return row[i];
-          //   //     // console.log(row[i])
-          //   //   }
-          //   //   // console.log(row)
-          //   // }))
-          //   // var target = awa
-          //   //   // console.log(data);
-          //   //   records += await getRecords(data.id).then(function (target) {
-          //   //     var response = target;
-          //   //     // console.log(target)
-          //   //     //   console.log(row);
-          //   //     // $("#resources").append(cardComponent(item.type.name, item.members))
-          //   //     return response;
-          //   //   })
-          // })
-          console.log(records);
-          await $("#resources").append(cardComponent(title, records, col));
-        })
-      }
-      // console.log(target);
-      // awa
-
+      $("ol.breadcrumb").append(
+        `<li class="breadcrumb-item active">${title}</li>`
+      );
       $(".main-header").removeClass("d-none");
       $(".main-sidebar").removeClass("d-none");
       $(".content-wrapper").removeClass("d-none");
       $(".main-footer").removeClass("d-none");
+    });
 
-      $("#resources").on("click", "img", function (e) {
-        //
-        console.log(e.target);
-        if (e.target && e.target.matches(".block-image")) {
-          var targetId = $(e.target).data("target-id");
-          var targetName = $(e.target).data("target-name");
-          var link = `https://lh3.googleusercontent.com/d/${targetId}`;
-          $("#targetTitle").html(targetName);
-          $("img#record").attr("src", link);
-          $("#showRecord").modal("show");
-          // console.log();
-        }
-      });
-    } else {
-      $(".main-authen").removeClass("d-none");
-    }
-  } else {
-    $(".main-error").removeClass("d-none");
-  }
   hidePreloader();
+
+  // if (dataObj) {
+  //   // console.log(dataObj);
+  //   // var access;
+  //   // var target = result.target;
+  //   // var addons = result.addons;
+
+  //   // if (target.secret || target.encoded) {
+  //   //   //   // if (action == "collections" || action == "lists") {
+  //   //   //   //   addons = true;
+  //   //   //   // }
+  //   //   if (ssid == urlParams().get("id")) {
+  //   //     access = true;
+  //   //   }
+  //   // } else {
+  //   //   access = true;
+  //   // }
+
+  //   // // console.log(result);
+  //   // if (access) {
+  //   // if (id && action == actionArray[0]) {
+  //   // target.members.forEach(function (row) {
+  //   //   // console.log(row)
+  //   // })
+  //   // addons.push({ type: target.type, members: target.members });
+  //   // await getRecords(target.id).then(function (row) {
+  //   //   // console.log(row);
+  //   //   // target.type.name = target.type ? target.type.name : ;
+  //   //   // if (!result.target.title) {
+  //   //   //   $("#resources").append(cardComponent(target.type.name, row))
+  //   //   // } else {
+  //   //   //   result.target.members.forEach(async function (row) {
+  //   //   //     // // console.log(row)
+  //   //   //     await getRecords(row.id).then(function (row) {
+  //   //   //       // console.log(row);
+  //   //   //       // target.type.name = target.type ? target.type.name : ;
+  //   //   //       if (!result.target.title) {
+  //   //   //         $("#resources").append(cardComponent(target.type.name, row))
+  //   //   //       } else {
+  //   //   //         result.target.members.forEach(function (row) {
+  //   //   //           // console.log(row)
+  //   //   //         })
+  //   //   //       }
+  //   //   //     })
+  //   //   //   })
+  //   //   // }
+  //   // })
+  //   // }
+
+  //   // if (addons.length > 0) {
+  //   //   addons.forEach(async function (item) {
+  //   //     // // console.log(item)
+  //   //     var title = item.type.name;
+  //   //     var col = 4;
+  //   //     var records = new Array();
+  //   //     for (var i = 0; i < item.members.length; i++) {
+  //   //       await getRecords(item.members[i].id).then(function (result) {
+  //   //         result.forEach(function (foo) {
+  //   //           records.push(foo);
+
+  //   //         })
+  //   //       })
+  //   //       // records.push(getRecords(item.members[i].id))
+  //   //     }
+  //   //     // // console.log(item);
+  //   //     // var records = await getRecords(item.id);
+  //   //     // var records = new Array();
+  //   //     // item.members.forEach(async function (data) {
+  //   //     //   // records.push(await getRecords(data.id).then(function (row) {
+  //   //     //   //   for (var i = 0; i < row.length; i++) {
+  //   //     //   //     return row[i];
+  //   //     //   //     // // console.log(row[i])
+  //   //     //   //   }
+  //   //     //   //   // // console.log(row)
+  //   //     //   // }))
+  //   //     //   // var target = awa
+  //   //     //   //   // // console.log(data);
+  //   //     //   //   records += await getRecords(data.id).then(function (target) {
+  //   //     //   //     var response = target;
+  //   //     //   //     // // console.log(target)
+  //   //     //   //     //   // console.log(row);
+  //   //     //   //     // $("#resources").append(cardComponent(item.type.name, item.members))
+  //   //     //   //     return response;
+  //   //     //   //   })
+  //   //     // })
+  //   //     // console.log(records);
+  //   //     await $("#resources").append(cardComponent(title, records, col));
+  //   //   })
+  //   // }
+  //   // // console.log(target);
+  //   // awa
+
+  //   // $(".main-header").removeClass("d-none");
+  //   // $(".main-sidebar").removeClass("d-none");
+  //   // $(".content-wrapper").removeClass("d-none");
+  //   // $(".main-footer").removeClass("d-none");
+
+  $("#resources").on("click", "img", function (e) {
+    //
+    // // console.log(e.target);
+    if (e.target && e.target.matches(".block-image")) {
+      var targetId = $(e.target).data("target-id");
+      var targetName = $(e.target).data("target-name");
+      var link = `https://lh3.googleusercontent.com/d/${targetId}=w1000`;
+      $("#targetTitle").html(targetName);
+      $("img#record").attr("src", link);
+      $("#showRecord").modal("show");
+      // // console.log();
+    }
+  });
+  //   // } else {
+  //   // $(".main-authen").removeClass("d-none");
+  // }
 }
 
 function cardComponent(title, imageObj, col = 4) {
-  var component = `<div class="card card-primary mb-3">`
-  component += `<div class="card-header">`
-  component += `<h4 class="card-title">${title}</h4>`
-  component += `</div>`
-  component += `<div class="card-body row">`
+  console.log(imageObj);
+  var component = `<div class="card card-primary mb-3">`;
+  component += `<div class="card-header">`;
+  component += `<h4 class="card-title">${title}</h4>`;
+  component += `</div>`;
+  component += `<div class="card-body row">`;
+  // if (imageObj.collection) {
+  // console.log(imageObj)
+  // }
+  // var targetTitle = imageObj.collection ? imageObj.collection.name : title;
   imageObj.forEach(function (target) {
-    component += `<div class="col-sm-${col} mb-3 mx-auto">`;
+    var targetTitle = imageObj.collection ? imageObj.collection.name : target.collection.name;
+    component += `<div class="col-sm-${col} mb-3">`;
     component += `<a href="javascript:void(0);" class="linkTarget">`;
-    component += `<img src="https://lh3.googleusercontent.com/d/${target.id}" class="w-100 h-100 mb-2 block-image" style="object-fit: cover;" alt="${target.name}" data-target-id="${target.id}" data-target-name="${title}" />`;
+    component += `<img src="https://lh3.googleusercontent.com/d/${target.id}=w1000" class="w-100 h-100 mb-2 block-image" style="object-fit: cover;" alt="${target.name}" data-target-id="${target.id}" data-target-name="${targetTitle}" />`;
     component += `</a>`;
     component += `</div>`;
-  })
+  });
   component += `</div>`;
   component += `</div>`;
   component += ``;

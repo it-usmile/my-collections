@@ -12,15 +12,15 @@ pageLoaded();
 //   var options = "";
 //   getResources("types")
 //     .then(function (types) {
-//       // console.log(types);
+//       // // console.log(types);
 //       types.forEach(function (row) {
-//         // console.log(item);
+//         // // console.log(item);
 //         options += `<option value="${row.id}">${row.name}</option>`;
 //       });
 //     })
 //     .then(function () {
 //       getResources(resource.target, resource.id).then(function (row) {
-//         // console.log(row);
+//         // // console.log(row);
 //         $(".main-header").removeClass("d-none");
 //         $(".main-sidebar").removeClass("d-none");
 //         $(".content-wrapper").removeClass("d-none");
@@ -32,7 +32,7 @@ pageLoaded();
 //             var output;
 //             if (row.length > 0) {
 //               row.forEach(function (val) {
-//                 // console.log(item);
+//                 // // console.log(item);
 //                 output += `<tr>`;
 //                 output += `<td>${val.name}</td>`;
 //                 output += `<td>${val.id}</td>`;
@@ -44,7 +44,7 @@ pageLoaded();
 //               });
 //             }
 //             // getResources("types").then(function (types) {
-//             // console.log(row);
+//             // // console.log(row);
 //             $("h1#titleHead").html("Types");
 //             $("ol.breadcrumb").append(`<li class="breadcrumb-item">Types</li>`);
 //             $(".nav-link-types").addClass("active");
@@ -82,9 +82,9 @@ pageLoaded();
 //           case "lists":
 //           default:
 //             if (urlParams().get("id")) {
-//               // console.log(row.members);
+//               // // console.log(row.members);
 //               row.members.forEach(function (val) {
-//                 // console.log(val);
+//                 // // console.log(val);
 //                 var secret = val.secret ? "TRUE" : "FALSE";
 //                 output += `<tr>`;
 //                 output += `<td>${val.type.name}</td>`;
@@ -205,17 +205,17 @@ pageLoaded();
 $("a#newRecord").click(async function (e) {
   e.preventDefault();
   var modalId = $(e.target).data("source");
-  // console.log(modalId);
+  // // console.log(modalId);
   $("#modal-create-" + modalId).modal("show");
 });
 
 // $("a#newResourceType").click(async function (e) {
-//   // console.log(e);
+//   // // console.log(e);
 //   $("#modal-default3").modal("show");
 // });
 
 // $("a#newCollection").click(async function (e) {
-//   // console.log(e);
+//   // // console.log(e);
 //   $("#modal-default2").modal("show");
 // });
 
@@ -223,7 +223,7 @@ $("a#reload").click(async function (e) {
   e.preventDefault();
   swalLoading();
   window.location.reload();
-  // console.log(e);
+  // // console.log(e);
   // $("#modal-default2").modal("show");
 });
 
@@ -231,14 +231,14 @@ $("form#newResourceType").submit(async function (e) {
   e.preventDefault();
   swalProcessing();
   var input = "resource=type-create&" + $(e.target).serialize();
-  // console.log();
+  // // console.log();
   var targetScriptUrl = scriptUrl;
   var result = await fetch(targetScriptUrl + "?" + input, {
     method: "POST",
   });
   var response = await result.json();
-  // console.log(result);
-  // console.log(response);
+  // // console.log(result);
+  // // console.log(response);
 
   if (response[0].message) {
     var title = "Something went wrong!";
@@ -272,13 +272,13 @@ $("form#newCollection").submit(async function (e) {
     $(e.target).serialize() +
     "&src=" +
     urlParams().get("id");
-  // console.log(input);
+  // // console.log(input);
   var targetScriptUrl = scriptUrl;
   var result = await fetch(targetScriptUrl + "?" + input, {
     method: "POST",
   });
   var response = await result.json();
-  // console.log(response);
+  // // console.log(response);
   if (response[0].message) {
     var title = "Something went wrong!";
     var message, status, success;
@@ -307,13 +307,13 @@ $("form#newResource").submit(async function (e) {
   e.preventDefault();
   swalProcessing();
   var input = "resource=create&" + $(e.target).serialize();
-  // console.log(input);
+  // // console.log(input);
   var targetScriptUrl = scriptUrl;
   var result = await fetch(targetScriptUrl + "?" + input, {
     method: "POST",
   });
   var response = await result.json();
-  // console.log(response);
+  // // console.log(response);
   if (response[0].message) {
     var title = "Something went wrong!";
     var message, status, success;
@@ -342,7 +342,7 @@ $("table#example").on("click", "a", function (e) {
   if (e.target && e.target.matches(".link-trash")) {
     e.preventDefault();
     var targetId = e.target.dataset.id;
-    // console.log(targetId);
+    // // console.log(targetId);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -368,7 +368,7 @@ $("table#example").on("click", "a", function (e) {
         // swalLoading();
         swalProcessing();
         postResources(targetAction, params).then(function (response) {
-          console.log(response);
+          // console.log(response);
           if (response[0].message == "success") {
             swalMessage("Deleted!", `Your ${targetMessage} has been deleted.`).then(
               function () {
@@ -388,7 +388,7 @@ $("table#example2").on("click", "a", function (e) {
   if (e.target && e.target.matches(".trash-link")) {
     e.preventDefault();
     var id = e.target.dataset.id;
-    // console.log(id);
+    // // console.log(id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -403,7 +403,7 @@ $("table#example2").on("click", "a", function (e) {
         // swalLoading();
         swalProcessing();
         postResources("collection-delete", params).then(function (response) {
-          // console.log(response);
+          // // console.log(response);
           if (response[0].message == "success") {
             swalMessage("Deleted!", "Your file has been deleted.").then(
               function () {
@@ -423,7 +423,7 @@ $("table#example3").on("click", "a", function (e) {
   if (e.target && e.target.matches(".trash-link")) {
     e.preventDefault();
     var id = e.target.dataset.id;
-    // console.log(id);
+    // // console.log(id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -438,7 +438,7 @@ $("table#example3").on("click", "a", function (e) {
         // swalLoading();
         swalProcessing();
         postResources("type-delete", params).then(function (response) {
-          // console.log(response);
+          // // console.log(response);
           if (response[0].message == "success") {
             swalMessage("Deleted!", "Your file has been deleted.").then(
               function () {
@@ -461,7 +461,7 @@ async function pageLoaded() {
   var dataArray = ["collections", "lists", "types"];
 
   var result = await getResources(action, id);
-  // console.log(result);
+  // // console.log(result);
   result = result.members ? result.members : result;
 
   if (action == "lists") {
@@ -469,7 +469,7 @@ async function pageLoaded() {
       var target = await getResources("collection", id);
       var title = target.title;
       $("h1#titleHead").html(title);
-      console.log(title);
+      // // console.log(title);
       $("ol.breadcrumb").append(`<li class="breadcrumb-item"><a href="resources.html?action=lists">Resources</a></li>`);
       $("ol.breadcrumb").append(`<li class="breadcrumb-item active">${title}</li>`);
     } else {
@@ -487,7 +487,7 @@ async function pageLoaded() {
     // }
     var htmlOutput = '';
     result.forEach(function (row) {
-      // console.log(row);
+      // // console.log(row);
       htmlOutput += tableBodyComponent(row);
     })
     $("#exampleBody").html(htmlOutput);
@@ -602,7 +602,7 @@ function tableBodyComponent(data) {
 //   targetScriptUrl = id ? targetScriptUrl + `&id=${id}` : targetScriptUrl;
 //   var result = await fetch(targetScriptUrl);
 //   var data = await result.json();
-//   //   console.log(scriptUrl);
+//   //   // console.log(scriptUrl);
 //   return data;
 // }
 
@@ -613,7 +613,7 @@ function tableBodyComponent(data) {
 //     method: "POST",
 //   });
 //   var response = await result.json();
-//   //   console.log(scriptUrl);
+//   //   // console.log(scriptUrl);
 //   return response;
 // }
 // } else {
