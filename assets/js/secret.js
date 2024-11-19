@@ -4,19 +4,6 @@ var ssid = sessionStorage.getItem(cname);
 pageLoaded();
 
 // var recordBody = "";
-$("#resourceGallery").on("click", "img", function (e) {
-  //
-  // console.log(e.target);
-  if (e.target && e.target.matches(".block-image")) {
-    var targetId = $(e.target).data("target-id");
-    var targetName = $(e.target).data("target-name");
-    var link = `https://lh3.googleusercontent.com/d/${targetId}`;
-    $("#targetTitle").html(targetName);
-    $("img#record").attr("src", link);
-    $("#showRecord").modal("show");
-    // console.log();
-  }
-});
 
 var currentTheme = localStorage.getItem("theme");
 if (currentTheme) {
@@ -78,33 +65,61 @@ $("form#authen").submit(async function (e) {
 async function pageLoaded() {
   var id = urlParams().get("id");
   var action = urlParams().get("action");
-  var dataArray = ["lists", "collections"];
-  var dataObj = new Object();
-  dataObj.target = new Object();
-  dataObj.members = new Array();
+  var actionArray = ["lists", "collections"];
+  // var dataObj = new Object();
 
   var result = await getResources(action, id).then(async function (row) {
-    dataObj.target = { info: row, result: await getRecords(row.id) };
-    var resource = await getResources(dataArray[0], row.resource);
+    var response = { target: row, addons: new Array() }
 
-    var members = resource.members ? resource.members : row.members;
-    members.forEach(function (collection) {
-      var dataRow = getRecords(collection.id);
-      dataObj.members.push({
-        info: collection,
-        result: dataRow,
-      });
+    await getResources(actionArray[0], row.resource).then(function (resource) {
+      if (resource.members) {
+        resource.members.forEach(function (member) {
+          // console.log(member);
+          if (!member.secret && member.id != row.id) {
+            var already;
+            for (var i = 0; i < response.addons.length; i++) {
+              // console.log(response.addons[i]);
+              // for (var n = 0; n < response[i].addons.length; n++) {
+              if (response.addons[i].type.id == member.type.id) {
+                already = true;
+                response.addons[i].members.push(member);
+              }
+              // 
+              // }
+              // alre
+            }
+            if (response.addons.length == 0 || !already) {
+              response.addons.push({ type: member.type, members: [member] })
+              // response.addons.members.push(member)
+            }
+            // response.addons.forEach(function (item) {
+            //   if (item.type.id == member.type.id) {
+            //     var data = { type: member.type.name, members: new Array() };
+            //     response.addons
+            //   }
+            // })
+            // console.log(member.type)
+          }
+        })
+        if (id && action == actionArray[0]) {
+          response.addons.push(member);
+        }
+      }
+      // console.log(resource.members);
     });
-    return dataObj;
+    // console.log(row)
+    return response;
   });
 
   if (result) {
-    var access, addons;
-    var resource = result.target.info;
-    if (resource.secret || resource.encoded) {
-      if (action == "collections" || action == "lists") {
-        addons = true;
-      }
+    var access;
+    var target = result.target;
+    var addons = result.addons;
+
+    if (target.secret || target.encoded) {
+      //   // if (action == "collections" || action == "lists") {
+      //   //   addons = true;
+      //   // }
       if (ssid == urlParams().get("id")) {
         access = true;
       }
@@ -112,129 +127,98 @@ async function pageLoaded() {
       access = true;
     }
 
+    console.log(result);
     if (access) {
-      // var resource = result.target.info;
-      var title = resource.title ? resource.title : resource.label;
+      // if (id && action == actionArray[0]) {
+      // target.members.forEach(function (row) {
+      //   console.log(row)
+      // })
+      // addons.push({ type: target.type, members: target.members });
+      await getRecords(target.id).then(function (row) {
+        console.log(row);
+        // target.type.name = target.type ? target.type.name : ;
+        // if (!result.target.title) {
+        //   $("#resources").append(cardComponent(target.type.name, row))
+        // } else {
+        //   result.target.members.forEach(async function (row) {
+        //     // console.log(row)
+        //     await getRecords(row.id).then(function (row) {
+        //       console.log(row);
+        //       // target.type.name = target.type ? target.type.name : ;
+        //       if (!result.target.title) {
+        //         $("#resources").append(cardComponent(target.type.name, row))
+        //       } else {
+        //         result.target.members.forEach(function (row) {
+        //           console.log(row)
+        //         })
+        //       }
+        //     })
+        //   })
+        // }
+      })
+      // }
 
-      $("#titleHead").html(title);
-      if (result.target.result.length > 0) {
-        var length = result.target.result.length;
-        var col = 4;
-        if (length <= 1) {
-          col = 12;
-        } else if (length <= 4 && length >= 2) {
-          col = 6;
-        }
-        var info = result.target.info;
-        // console.log(info.type.name);
-        // result.target.result.forEach(function (row) {
-        // console.log(result.target.info.label);
-        // row.type = { name: result.target.info.label };
-        $("#resources").append(cardComponent(info.type.name, result.target.result, col));
-        // });
+      if (addons.length > 0) {
+        addons.forEach(async function (item) {
+          // console.log(item)
+          var title = item.type.name;
+          var col = 4;
+          var records = new Array();
+          for (var i = 0; i < item.members.length; i++) {
+            await getRecords(item.members[i].id).then(function (result) {
+              result.forEach(function (foo) {
+                records.push(foo);
+
+              })
+            })
+            // records.push(getRecords(item.members[i].id))
+          }
+          // console.log(item);
+          // var records = await getRecords(item.id);
+          // var records = new Array();
+          // item.members.forEach(async function (data) {
+          //   // records.push(await getRecords(data.id).then(function (row) {
+          //   //   for (var i = 0; i < row.length; i++) {
+          //   //     return row[i];
+          //   //     // console.log(row[i])
+          //   //   }
+          //   //   // console.log(row)
+          //   // }))
+          //   // var target = awa
+          //   //   // console.log(data);
+          //   //   records += await getRecords(data.id).then(function (target) {
+          //   //     var response = target;
+          //   //     // console.log(target)
+          //   //     //   console.log(row);
+          //   //     // $("#resources").append(cardComponent(item.type.name, item.members))
+          //   //     return response;
+          //   //   })
+          // })
+          console.log(records);
+          await $("#resources").append(cardComponent(title, records, col));
+        })
       }
-      if (addons) {
-        var addonArray = new Array();
-        // console.log(result);
-        if (result.members.length > 0) {
-          // console.log(resource);
-          // var resource = result.info;
-          // console.log(info);
-
-          result.members.forEach(async function (row) {
-            var info = row.info;
-            var targetData = await row.result;
-            // console.log(info);
-            if (targetData.length > 0) {
-              // console.log(data);
-              // console.log(info);
-              if (info.id != id && !info.secret && !info.encoded) {
-                // 
-                // awa nsole.log(item);
-                if (addonArray.length > 0) {
-                  var already;
-                  for (var i = 0; i < addonArray.length; i++) {
-                    if (addonArray[i].type == info.type.name) {
-                      // already = true;
-                      // if (!addonArray[i].data) {
-                      //   addonArray[i].data = new Array();
-                      // }
-                      targetData.forEach(function (item) {
-                        addonArray[i].data.push(item);
-                      })
-                    } else {
-                      addonArray.push({ type: info.type.name, data: targetData });
-                    }
-                  }
-                  // addonArray.forEach(function (item) {
-                  //   if (item.type == info.type.name) {
-                  //     already = true;
-                  //   }
-                  //   //     // console.log(item.type);
-                  //   //     // console.log(types[i].name);
-                  // })
-                  // if (!already) {
-                  //   addonArray.push({ type: info.type.name, data: targetData });
-                  // } else {
-                  //   addonArray[i].data += targetData;
-                  // }
-                } else {
-                  addonArray.push({ type: info.type.name, data: targetData })
-
-                }
-                // }); 
-              }
-              //   console.log(info.name);
-              // console.log(getGroups("groups"))
-              // addonArray.push()
-
-
-              // console.log({ info, data })
-              // addonArray.forEach(function(item){
-              //   if(item.)
-              // })
-              // for (var i = 0; i < addonArray; i++) {
-              // console.log(addonArray[i].type);
-              // if (addonArray[i].type != row.info.type.name) {
-              //   // console.log(data);
-              //   addonArray[i] = { type: row.info.type.name };
-              //   // addonArray[i].data.push(data);
-              // }
-              // addonArray[i].data.push(data);
-              // }
-              // console.log(row);
-              //   // console.log(row.info.type.name);
-              //   // console.log(data)
-              //     // for (var i = 0; i <= addonArray; i++) {
-              //     //   if (dataArray[i].type == row.info.type.name) {
-              //     //     await dataArray[i].data.push(data);
-              //     //   }
-              //     // }
-              //     // addonArray.forEach(function (item) {
-              //     //   if (item.type == row.info.type.name) {
-              //     //     addonArray
-              //     //     // 
-              //     //   }
-              //     // })
-              //     // addonObj.push(data);
-              //     //   $("#resources").append(cardComponent(row.info.type.name, data, col));
-              //   }
-              //   // console.log(items);
-              //   //   // console.log(row.info.label);
-              //   //   items.forEach(function (val) {
-              //   //     val.type = { name: row.info.label };
-              //   //     $("#resourceGallery").append(imageComponent(val));
-              //   //   });
-            }
-          });
-        }
-        console.log(addonArray);
-      }
+      // console.log(target);
+      // awa
 
       $(".main-header").removeClass("d-none");
       $(".main-sidebar").removeClass("d-none");
       $(".content-wrapper").removeClass("d-none");
       $(".main-footer").removeClass("d-none");
+
+      $("#resources").on("click", "img", function (e) {
+        //
+        console.log(e.target);
+        if (e.target && e.target.matches(".block-image")) {
+          var targetId = $(e.target).data("target-id");
+          var targetName = $(e.target).data("target-name");
+          var link = `https://lh3.googleusercontent.com/d/${targetId}`;
+          $("#targetTitle").html(targetName);
+          $("img#record").attr("src", link);
+          $("#showRecord").modal("show");
+          // console.log();
+        }
+      });
     } else {
       $(".main-authen").removeClass("d-none");
     }
