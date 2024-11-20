@@ -2,6 +2,9 @@ i {
   pointer-events: none;
 }
 
+.animation__shake {
+  max-width: 80%;
+}
 
 .pageloaded {
   display: -ms-flexbox;

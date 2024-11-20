@@ -1,7 +1,54 @@
-var ssuid = localStorage.getItem("ssuid");
+var ssuid = sessionStorage.getItem("ssuid");
 var action = urlParams().get("action");
 var id = urlParams().get("id");
-pageLoaded();
+pageLoaded().then(function (callback) {
+  if (callback) {
+    $("#example")
+      .DataTable({
+        responsive: true,
+        lengthChange: false,
+        stateSave: true,
+        autoWidth: false,
+        buttons: [
+          "copy",
+          "csv",
+          "excel",
+          "pdf",
+          {
+            extend: "print",
+            exportOptions: {
+              columns: [0, 1, 2],
+            },
+          },
+          "colvis",
+        ],
+        columnDefs: [{ orderable: false, targets: [1, 2, 3] }],
+      })
+      .buttons()
+      .container()
+      .appendTo("#example_wrapper .col-md-6:eq(0)");
+  }
+  hidePreloader();
+});
+
+
+$("a.btn-sign-out").click(function (e) {
+  e.preventDefault();
+  Swal.fire({
+    title: "Please confirm to signout",
+    icon: 'question',
+    showCancelButton: true,
+  }).then(function (result) {
+    if (result.isConfirmed) {
+      sessionStorage.removeItem("ssuid");
+      swalMessage("Session destroyed", "Please reload resources page").then(function () {
+        // swalLoading();
+        showPreloader();
+        window.location.reload();
+      })
+    }
+  });
+})
 // if (ssuid) {
 // var resource = new Object();
 // var action = urlParams().get("action");
@@ -457,6 +504,12 @@ $("table#example3").on("click", "a", function (e) {
 async function pageLoaded() {
 
   // var action = urlParams().get("action");
+  // var ssuid = localStorage.getItem("ssuid");
+  // console.log(ssuid);
+  if (!ssuid) {
+    $(".main-authen").removeClass("d-none");
+    return false;
+  }
   var dataObj = new Array();
   var dataArray = ["collections", "lists", "types"];
 
@@ -480,7 +533,8 @@ async function pageLoaded() {
 
   }
 
-  if (result) {
+  if (result.length > 0) {
+    console.log(result);
 
     // if (action == dataArray[1]) {
     //   // 
@@ -492,30 +546,7 @@ async function pageLoaded() {
     })
     $("#exampleBody").html(htmlOutput);
     $("#resourceDataTables").removeClass("d-none");
-    $("#example")
-      .DataTable({
-        responsive: true,
-        lengthChange: false,
-        stateSave: true,
-        autoWidth: false,
-        buttons: [
-          "copy",
-          "csv",
-          "excel",
-          "pdf",
-          {
-            extend: "print",
-            exportOptions: {
-              columns: [0, 1, 2],
-            },
-          },
-          "colvis",
-        ],
-        columnDefs: [{ orderable: false, targets: [1, 2, 3] }],
-      })
-      .buttons()
-      .container()
-      .appendTo("#example_wrapper .col-md-6:eq(0)");
+
 
     var targetAction = action;
     if (dataArray.includes(action)) {
@@ -526,7 +557,7 @@ async function pageLoaded() {
       // }
       if (action == dataArray[1]) {
         if (id) {
-          $('.link-detail').addClass('d-none');
+          // $('.link-detail').addClass('d-none');
           targetAction = "collections"
           var types = await getResources("types");
           types.forEach(function (row) {
@@ -534,11 +565,10 @@ async function pageLoaded() {
           })
         }
       } else if (action == dataArray[2]) {
-        $('.link-detail').addClass('d-none');
-        $('.link-public').addClass('d-none');
+        // $('.link-detail').addClass('d-none');
+        // $('.link-public').addClass('d-none');
         $("h1#titleHead").html("Types");
         $("ol.breadcrumb").append(`<li class="breadcrumb-item">Types</li>`);
-      } else {
       }
     }
 
@@ -560,9 +590,15 @@ async function pageLoaded() {
     //     $(".main-authen").removeClass("d-none");
     //   }
   } else {
-    //   $(".main-error").removeClass("d-none");
+    $(".main-error").removeClass("d-none");
+    return false;
   }
-  hidePreloader();
+  // } else {
+  //   $(".main-authen").removeClass("d-none");
+  //   return false;
+  // }
+  // hidePreloader();
+  return true;
 }
 // }else{
 
@@ -588,12 +624,17 @@ function tableBodyComponent(data) {
   output += `<td>${options}</td>`;
 
   output += `<td>`;
-  output += `<a href="resources.html?action=lists&id=${data.id}" class="text-info mr-2 link-detail" title="Detail"><i class="fas fa-search"></i></a>`;
+  if (data.members) {
+    output += `<a href="resources.html?action=lists&id=${data.id}" class="text-info mr-2 link-detail" title="Detail"><i class="fas fa-search"></i></a>`;
+  }
   output += `<a href="#" class="text-warning mr-2 link-edit" title="Edit"><i class="fas fa-edit"></i></a>`;
   output += `<a href="secret.html?action=${target}&id=${data.id}" class="text-primary mr-2 link-public" title="Public" target="_blank"><i class="fas fa-globe"></i></a>`;
+  if (data.secret || data.encoded) {
+  }
   output += `<a href="#" class="text-danger link-trash" title="Trash" data-id="${data.id}"><i class="fas fa-trash"></i></a>`;
   output += `</td>`;
   output += '</tr>';
+
   return output;
 }
 
@@ -620,23 +661,31 @@ function tableBodyComponent(data) {
 //   $(".main-authen").removeClass("d-none");
 //   hidePreloader();
 
-//   $("form#authen").submit(async function (e) {
-//     e.preventDefault();
-//     var input = $(e.target).find("input");
-//     var secret = input[0].value;
-//     var link = `${scriptUrl}?hash=${urlParams().get(
-//       "action"
-//     )}&id=${urlParams().get("id")}&secret=${secret}`;
-//     swalLoading();
-//     var data = await fetch(link);
-//     var result = await data.json();
-//     if (result.message) {
-//       // alert(result.message);
-//       swalMessage("Something went wrong", "Please try again", "error");
-//     } else {
-//       // setCookie(cname, result.id, 0.25);
-//       sessionStorage.setItem(cname, result.id);
-//       window.location.reload();
-//     }
-//   });
-// }
+$("form#authen").submit(async function (e) {
+  e.preventDefault();
+  swalProcessing();
+  // var input = $(e.target).find("input");
+  // var id = input[0].value;
+  // var secret = input[1].value;
+  // // swalLoading();
+  var params = $(e.target).serialize();
+  // console.log(params);
+  var link = `${scriptUrl}?hash=supers&${params}`;
+  // console.log(link);
+  var data = await fetch(link);
+  var result = await data.json();
+  // swalMessage();
+  // console.log(result);
+  if (result.message) {
+    // alert(result.message);
+    swalMessage("Something went wrong", "Please try again", "error");
+  } else {
+    // setCookie(cname, result.id, 0.25);
+    sessionStorage.setItem('ssuid', result.id);
+    swalMessage("Session accessed", "Redirect to resource page").then(function () {
+      // swalLoading();
+      showPreloader();
+      window.location.reload();
+    })
+  }
+});

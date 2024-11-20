@@ -79,18 +79,46 @@
         <div class="col-lg-4 m-auto">
           <div class="card card-body">
             <form action="" class="form" id="authen">
-              <label for="hash">Enter your password</label>
-              <div class="input-group">
-                <input
-                  type="password"
-                  class="form-control"
-                  placeholder="Password"
-                  aria-label="Password"
-                  aria-describedby="basic-addon"
-                  required
-                />
-                <div class="input-group-append">
-                  <input class="btn btn-primary" type="submit" />
+              <label for="" class="text-uppercase">Session resource</label>
+              <div class="d-flex justify-content-between">
+                <div class="col">
+                  <!-- <label for="hash">Username</label> -->
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"
+                        ><i class="fas fa-user" style="width: 20px;"></i
+                      ></span>
+                    </div>
+                    <input
+                      type="text"
+                      name="id"
+                      class="form-control"
+                      placeholder="Admin account"
+                      aria-label="Username"
+                      aria-describedby="basic-addon"
+                      required
+                    />
+                  </div>
+                  <!-- <label for="hash">Enter your password</label> -->
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"
+                        ><i class="fas fa-key" style="width: 20px;"></i
+                      ></span>
+                    </div>
+                    <input
+                      type="password"
+                      name="secret"
+                      class="form-control"
+                      placeholder="Password"
+                      aria-label="Password"
+                      aria-describedby="basic-addon"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <input class="btn btn-primary h-100" type="submit" />
                 </div>
               </div>
             </form>
@@ -274,7 +302,7 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <a href="#" class="btn btn-default btn-flat">Profile</a>
-                <a href="#" class="btn btn-default btn-flat float-right"
+                <a href="#" class="btn btn-default btn-sign-out btn-flat float-right"
                   >Sign out</a
                 >
               </li>

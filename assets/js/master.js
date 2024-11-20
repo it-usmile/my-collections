@@ -22,6 +22,13 @@ function hidePreloader() {
   }, 1500);
 }
 
+function showPreloader() {
+  // setTimeout(function () {
+    preloader.attr("style", 'height: 100vh');
+    preloader.children().show();
+  // }, 1500);
+}
+
 function swalLoading() {
   Swal.fire({
     title: "Loading.",
@@ -35,7 +42,6 @@ function swalLoading() {
 }
 
 function swalProcessing() {
-  let timerInterval;
   Swal.fire({
     title: "Processing<b></b>",
     allowOutsideClick: false,
@@ -44,7 +50,7 @@ function swalProcessing() {
       Swal.showLoading();
       const timer = Swal.getPopup().querySelector("b");
       var i = 0;
-      timerInterval = setInterval(() => {
+      setInterval(() => {
         if (i < 3) {
           timer.textContent += `.`;
           i++;
